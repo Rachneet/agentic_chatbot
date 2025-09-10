@@ -1,0 +1,8 @@
+# secret keys and environment variables
+.env
+
+# cache in all folders
+**/__pycache__/
+.idea/
+.vscode/
+.ipynb_checkpoints/
