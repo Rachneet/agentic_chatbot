@@ -56,6 +56,18 @@ class LoadStreamlitUI:
             st.session_state["selected_groq_model"] = None
             st.session_state["GROQ_API_KEY"] = None
 
+        if st.session_state["selected_usecase"] == "Chatbot with Tools":
+            st.session_state["TAVILY_API_KEY"] = st.sidebar.text_input(
+                "Enter TAVILY API Key", 
+                type="password",
+                key="tavily_api_key"
+            )
+            os.environ["TAVILY_API_KEY"] = st.session_state["TAVILY_API_KEY"]
+            if not st.session_state["TAVILY_API_KEY"]:
+                st.sidebar.warning("Please enter your TAVILY API Key to proceed.")
+        else:
+            st.session_state["TAVILY_API_KEY"] = None
+
     def get_user_controls(self):
         """Get current user controls from session state."""
         return {

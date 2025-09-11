@@ -1,7 +1,7 @@
 import json
 import streamlit as st
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
 
 class DisplayStreamlitResult:
@@ -25,3 +25,22 @@ class DisplayStreamlitResult:
                         st.write(self.user_message)
                     with st.chat_message("assistant"):
                         st.write(value["messages"].content)
+
+        elif self.use_case == "Chatbot with Tools":
+            initial_state = {"messages": self.user_message}
+            res = self.graph.invoke(initial_state)
+
+            for message in res["messages"]:
+                if isinstance(message, HumanMessage):
+                    with st.chat_message("user"):
+                        st.write(message.content)
+                
+                elif isinstance(message, ToolMessage):
+                    with st.chat_message("ai"):
+                        st.write("Tool call sent")
+                        st.write(message.content)
+                        st.write("Tool call response received")
+
+                elif isinstance(message, AIMessage):
+                    with st.chat_message("assistant"):
+                        st.write(message.content)

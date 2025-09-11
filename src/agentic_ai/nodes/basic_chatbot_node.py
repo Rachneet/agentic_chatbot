@@ -6,7 +6,6 @@ class BasicChatbotNode:
     def __init__(self, model):
         self.model = model
 
-
     def process(self, state: GraphState):
             """
             Process the chatbot node.
