@@ -13,7 +13,7 @@ class LoadStreamlitUI:
         self.usecase_options = self.config.get_usecase_options()
         self.groq_model_options = self.config.get_groq_model_options()
 
-    def setup_page(self):
+    def setup_page(self):                   
         """
         Set up the Streamlit page configuration and title.
         """
@@ -25,6 +25,8 @@ class LoadStreamlitUI:
         Display sidebar and store in session state.
         """      
         st.sidebar.title("Configuration")
+        st.session_state["is_button_clicked"] = False
+        st.session_state["news_time_filter"] = ""
         
         # Store directly in session state
         st.session_state["selected_llm"] = st.sidebar.selectbox(
@@ -56,7 +58,7 @@ class LoadStreamlitUI:
             st.session_state["selected_groq_model"] = None
             st.session_state["GROQ_API_KEY"] = None
 
-        if st.session_state["selected_usecase"] == "Chatbot with Tools":
+        if st.session_state["selected_usecase"] == "Chatbot with Tools" or st.session_state["selected_usecase"] == "News Agent":
             st.session_state["TAVILY_API_KEY"] = st.sidebar.text_input(
                 "Enter TAVILY API Key", 
                 type="password",
@@ -67,6 +69,20 @@ class LoadStreamlitUI:
                 st.sidebar.warning("Please enter your TAVILY API Key to proceed.")
         else:
             st.session_state["TAVILY_API_KEY"] = None
+
+        if st.session_state["selected_usecase"] == "News Agent":
+
+            with st.sidebar:
+                st.markdown("### News Agent Settings")
+                time_filter = st.selectbox(
+                    "Select Time Filter", 
+                    ["Past Day", "Past Week", "Past Month", "Past Year"],
+                    index=0
+                )
+
+                if st.button("Fetch news", use_container_width=True):
+                    st.session_state["news_time_filter"] = time_filter
+                    st.session_state["is_button_clicked"] = True
 
     def get_user_controls(self):
         """Get current user controls from session state."""

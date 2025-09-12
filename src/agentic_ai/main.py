@@ -18,7 +18,10 @@ def load_app():
         st.error("Please provide the necessary inputs to proceed.")
         return
 
-    user_message = st.chat_input("Enter your message: ")
+    if st.session_state.get("is_button_clicked"):
+        user_message = st.session_state["news_time_filter"]
+    else:
+        user_message = st.chat_input("Enter your message: ")
 
     if user_message:
         try:

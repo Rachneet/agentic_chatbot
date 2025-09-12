@@ -4,6 +4,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from src.agentic_ai.state.graph_state import GraphState
 from src.agentic_ai.nodes.basic_chatbot_node import BasicChatbotNode
 from src.agentic_ai.nodes.chatbot_with_tools_node import ChatbotWithToolsNode
+from src.agentic_ai.nodes.news_node import NewsNode
 from src.agentic_ai.tools.search_tool import get_tools, create_tool_node
 
 
@@ -63,6 +64,36 @@ class GraphBuilder:
         self.graph_builder.add_edge("chatbot", END)
 
     
+    def chatbot_with_news_agent_graph(self):
+        """
+        Build a chatbot with news agent integration.
+
+        """
+
+        # node functionality
+        self.news_node = NewsNode(self.model)
+
+        # nodes
+        self.graph_builder.add_node(
+            "fetch_news",
+            self.news_node.fetch_news
+        )
+        self.graph_builder.add_node(
+            "summarizer",
+            self.news_node.summarize_news
+        )
+        self.graph_builder.add_node(
+            "save_results",
+            self.news_node.save_results
+        )
+
+        # edges
+        self.graph_builder.set_entry_point("fetch_news")
+        self.graph_builder.add_edge("fetch_news", "summarizer")
+        self.graph_builder.add_edge("summarizer", "save_results")
+        self.graph_builder.add_edge("save_results", END)
+
+    
     def setup_graph(self, use_case: str):
         """
         Which graph to set up based on use case.
@@ -71,5 +102,7 @@ class GraphBuilder:
             self.basic_chatbot_graph()
         elif use_case == "Chatbot with Tools":
             self.chatbot_with_tools_graph()
+        elif use_case == "News Agent":
+            self.chatbot_with_news_agent_graph()
 
         return self.graph_builder.compile()

@@ -44,3 +44,20 @@ class DisplayStreamlitResult:
                 elif isinstance(message, AIMessage):
                     with st.chat_message("assistant"):
                         st.write(message.content)
+
+        elif self.use_case == "News Agent":
+            frequency = self.user_message
+            with st.spinner("Fetching and summarizing news..."):
+                initial_state = {"messages": frequency}
+                res = self.graph.invoke(initial_state)
+
+                try:
+                    # read the markdown file and display in streamlit
+                    filename = f"./news/news_summary_{frequency.replace(' ', '_')}.md"
+                    with open(filename, "r") as f:
+                        news_summary = f.read()
+                    st.markdown(news_summary)
+                except FileNotFoundError:
+                    st.error("Error: News summary file not found.")
+                except Exception as e:
+                    st.error(f"An unexpected error occurred: {e}")
